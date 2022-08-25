@@ -1,0 +1,242 @@
+import pyautogui
+import time
+import pandas as pd
+import pyperclip as pas
+import webbrowser
+from openpyxl import load_workbook
+import os
+from datetime import datetime
+
+
+
+def execute(text, img, i):
+
+    time.sleep(5)
+    if type(text[i]) == float:
+        wb = load_workbook(location)
+
+        sheet = wb.active
+        # print("updating excel...")
+
+        sheet.cell(row=i + 2, column=7).value = 'Missing message text'
+        sheet.cell(row=i + 2, column=8).value = 'Not posted'
+        wb.save(location)
+        return None
+
+    # print("Searching for the discussions section in the page...\n")
+
+    pyautogui.hotkey('ctrl', 'f')
+    time.sleep(1)
+    pyautogui.typewrite("discussion")
+    time.sleep(2)
+    pyautogui.hotkey('ctrl', 'enter')
+    time.sleep(5)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite('Write something')
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(1)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite("What's on your mind")
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(1)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite("Create your first post")
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(1)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite('Create a public post')
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(1)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite('Start discussion')
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(1)
+
+
+    time.sleep(8)
+    print("Writing post\n")
+    pyautogui.doubleClick(1000,570)
+    pyautogui.hotkey('ctrl','a')
+    pyautogui.press('delete')
+    pas.copy(text[i])
+    pyautogui.hotkey('ctrl','v')
+    for n in range(14):
+        pyautogui.press('enter')
+    time.sleep(2)
+
+    # print("Checking if the post contains image...")
+
+    # check if image path is given
+    if type(img[i]) != float:
+        path = str(img[i])
+        isexist = os.path.exists(path)
+        if isexist is True:
+            postimage(img[i])
+        else:
+            wb = load_workbook(location)
+
+            sheet = wb.active
+            print("Updating excel...")
+
+            # datetime object containing current date and time
+            now = datetime.now()
+
+            # dd/mm/YY H:M:S
+            dt_string = now.strftime("%d/%m/%Y  %H:%M:%S")
+
+            sheet.cell(row=i + 2, column=7).value = 'Image path not found'
+            sheet.cell(row=i + 2, column=8).value = 'Not Posted :' + str(dt_string)
+            wb.save(location)
+            return None
+
+# if image doesn't exist and just the text is posted
+    else:
+        print("Posting.....")
+        time.sleep(3)
+        pyautogui.doubleClick(1017, 911)
+
+
+    time.sleep(10)
+
+    wb = load_workbook(location)
+
+    sheet = wb.active
+
+    now = datetime.now()
+
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y  %H:%M:%S")
+
+    sheet.cell(row=i + 2, column=7).value = "Succesfully Posted on " + str(dt_string)
+    # sheet.cell(row=i + 2, column=8).value = text2
+    wb.save(location)
+
+
+
+def postimage(path):
+    for c in range(3):
+        pyautogui.keyDown('tab')
+        pyautogui.keyUp('tab')
+    time.sleep(2)
+    pyautogui.keyDown('enter')
+    pyautogui.keyUp('enter')
+    time.sleep(4)
+    pyautogui.typewrite(path)
+    time.sleep(2)
+    pyautogui.press('enter')
+    time.sleep(4)
+
+    # Changing of range acc to the post
+
+    print("Posting with image.....")
+    time.sleep(3)
+    pyautogui.doubleClick(1017, 911)
+    print(path)
+
+print("Image was posted succesfully")
+
+
+def comment():
+
+    pyautogui.press('j')
+    for c in range(4):
+        pyautogui.keyDown('tab')
+        pyautogui.keyUp('tab')
+    time.sleep(3)
+    pyautogui.keyDown('enter')
+    pyautogui.keyUp('enter')
+    time.sleep(15)
+    for c in range(8):
+        pyautogui.keyDown('down')
+        pyautogui.keyUp('down')
+    time.sleep(2)
+    pyautogui.keyDown('enter')
+    pyautogui.keyUp('enter')
+    print("Notification turned off succesfully")
+
+def copyLink(grouptype):
+    pyautogui.hotkey('ctrl', 'r')
+    time.sleep(7)
+    pyautogui.press('j')
+    time.sleep(2)
+    if grouptype=="public" :
+        pyautogui.press('s')
+        time.sleep(5)
+        for c in range(8):
+            pyautogui.press('down')
+        pyautogui.press('enter')
+    else:
+        pyautogui.press('o')
+        time.sleep(2)
+        pyautogui.press('f6')
+        time.sleep(2)
+        pyautogui.hotkey('ctrl','c')
+        time.sleep(2)
+
+
+
+
+print("Extracting data from excel file......")
+location = r'C:\Users\Ayan Khan\Desktop\sam.xlsx'
+df = pd.read_excel(location)
+groupID = df["FB Group ID"].tolist()
+text = df["Message Text"].tolist()
+path = df["Image Path"].tolist()
+disableComments = df["Disable comment?"].tolist()
+groupType = df["Group type"].tolist()
+chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s'
+webbrowser.get(chrome_path).open('http://google.com/')
+time.sleep(3)
+count=1
+
+for i in range(len(groupID)):
+    pyautogui.hotkey('ctrl','t')
+    time.sleep(3)
+
+
+
+    pyautogui.click(800, 300)
+    pyautogui.write(['f6'])
+    time.sleep(1)
+    print("Executing for groupId number - "+str(count)+"\nthe group ID :"+str(groupID[i]))
+    link = 'https://facebook.com/groups/' + str(groupID[i])
+    pyautogui.typewrite(link)
+    pyautogui.typewrite('\n')
+    time.sleep(10)
+
+    pyautogui.hotkey('ctrl','f')
+    pyautogui.typewrite('visit help center')
+    time.sleep(3)
+    pyautogui.hotkey('ctrl','enter')
+    time.sleep(3)
+    pyautogui.press('f6')
+    pyautogui.hotkey('ctrl','c')
+    helpText=pas.paste()
+    print(helpText)
+    if helpText == 'https://www.facebook.com/help':
+        print("Invalid group")
+        wb = load_workbook(location)
+
+        sheet = wb.active
+        # print("Updating excel...")
+
+        sheet.cell(row=i + 2, column=7).value = 'Invalid group id'
+        sheet.cell(row=i + 2, column=8).value = 'Not posted'
+        wb.save(location)
+    else:
+        execute(text, path, i)
+        print("Succesfully groups executed " +str(count))
+    count=i+1
+print("Total number of groups get executed by the script: "+str(count))
+
+
+
+# 1006, 705
+# private 816, 570 (630, 565)
+# public 875, 515  (553, 527)
+# pending 480,415
